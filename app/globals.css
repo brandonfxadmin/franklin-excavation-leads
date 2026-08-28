@@ -1,0 +1,199 @@
+:root {
+    --charcoal: #1c1a17;
+    --charcoal-2: #2a2621;
+    --tan: #f2ece1;
+    --tan-2: #e7dcc8;
+    --orange: #d9660b;
+    --orange-dark: #b8500a;
+    --green-ok: #2f6b3a;
+    --red-no: #a3311c;
+    --amber: #c98a1f;
+    --text-dark: #221f1b;
+    --border: #d8ccb4;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+    padding: 0;
+    margin: 0;
+    background: var(--tan);
+    color: var(--text-dark);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+a { color: inherit; }
+
+.header {
+    background: var(--charcoal);
+    color: var(--tan);
+    padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.header .brand {
+    font-weight: 800;
+    font-size: 1.15rem;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.header .brand .dot {
+    width: 10px;
+    height: 10px;
+    background: var(--orange);
+    border-radius: 2px;
+}
+
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 32px 20px 64px;
+}
+
+.card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 24px;
+    margin-bottom: 20px;
+}
+
+h1, h2, h3 {
+    font-weight: 800;
+    letter-spacing: -0.01em;
+}
+
+h1 { font-size: 1.6rem; margin: 0 0 4px; }
+h2 { font-size: 1.2rem; margin: 0 0 12px; }
+h3 { font-size: 1rem; margin: 0 0 8px; }
+
+.subtitle { color: #5c5646; margin-bottom: 24px; }
+
+label {
+    display: block;
+    font-weight: 600;
+    font-size: 0.85rem;
+    margin: 14px 0 6px;
+    color: #4a4436;
+}
+
+input[type="text"],
+input[type="tel"],
+input[type="email"],
+textarea,
+select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    background: #fffdf9;
+}
+
+textarea { resize: vertical; min-height: 80px; }
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--orange);
+    color: #fff;
+    border: none;
+    padding: 11px 20px;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.btn:hover { background: var(--orange-dark); }
+.btn.secondary { background: var(--charcoal-2); }
+.btn.secondary:hover { background: var(--charcoal); }
+.btn.ghost {
+    background: transparent;
+    color: var(--charcoal);
+    border: 1px solid var(--border);
+}
+.btn.danger { background: var(--red-no); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+.badge.link_sent { background: #e2e2e2; color: #444; }
+.badge.started { background: #f0e2c0; color: #7a5c10; }
+.badge.form_completed { background: #fde3c0; color: #8a5a10; }
+.badge.estimate_sent { background: #d6e8ff; color: #1a4c8a; }
+.badge.approved { background: #d7ecd9; color: var(--green-ok); }
+.badge.declined { background: #f4d7d1; color: var(--red-no); }
+
+.lead-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+    text-decoration: none;
+    color: inherit;
+}
+.lead-row:last-child { border-bottom: none; }
+.lead-row:hover { background: #faf6ee; }
+.lead-row .name { font-weight: 700; }
+.lead-row .meta { color: #7a7361; font-size: 0.85rem; margin-top: 2px; }
+
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 640px) { .field-row { grid-template-columns: 1fr; } }
+
+.media-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 10px;
+    margin-top: 10px;
+}
+.media-grid img, .media-grid video {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+}
+
+.hint {
+    font-size: 0.8rem;
+    color: #7a7361;
+    margin-top: 4px;
+}
+
+.estimate-box {
+    background: var(--charcoal);
+    color: var(--tan);
+    border-radius: 10px;
+    padding: 24px;
+    text-align: center;
+    margin: 20px 0;
+}
+.estimate-box .amount {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--orange);
+    margin: 8px 0;
+}
+
+.center { text-align: center; }
+.error-text { color: var(--red-no); font-size: 0.85rem; margin-top: 6px; }
+.stack { display: flex; gap: 10px; flex-wrap: wrap; }
