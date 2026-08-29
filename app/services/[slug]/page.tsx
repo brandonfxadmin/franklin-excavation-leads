@@ -5,7 +5,7 @@ import SiteFooter from "../../../components/SiteFooter";
 import PageHero from "../../../components/PageHero";
 import CTASection from "../../../components/CTASection";
 import { SERVICES, getService, getAdjacentServices } from "../../../data/services";
-import { CheckIcon, ArrowRightIcon, SERVICE_ICONS } from "../../../components/icons";
+import { CheckIcon, ArrowRightIcon } from "../../../components/icons";
 
 type Props = { params: { slug: string } };
 
@@ -27,22 +27,23 @@ export default function ServiceDetailPage({ params }: Props) {
   if (!service) return notFound();
 
   const { prev, next } = getAdjacentServices(params.slug);
-  const Icon = SERVICE_ICONS[service.slug];
+  const total = SERVICES.length;
+  const position = SERVICES.findIndex((s) => s.slug === params.slug) + 1;
 
   return (
     <>
       <SiteHeader />
       <main>
-        <PageHero kicker={service.heroKicker} title={service.heroTitle} image={service.image} />
+        <PageHero
+          kicker={service.heroKicker}
+          title={service.heroTitle}
+          image={service.image}
+          index={`${String(position).padStart(2, "0")} / ${String(total).padStart(2, "0")}`}
+        />
 
         <section className="section">
           <div className="section-inner service-detail-grid">
             <div className="service-detail-main">
-              {Icon ? (
-                <div className="service-detail-icon">
-                  <Icon />
-                </div>
-              ) : null}
               {service.intro.map((para, i) => (
                 <p key={i} className={i === 0 ? "lede" : undefined}>
                   {para}
@@ -51,11 +52,11 @@ export default function ServiceDetailPage({ params }: Props) {
 
               <div className="service-detail-block">
                 <span className="section-kicker">{service.offerLabel}</span>
-                <div className="offer-grid">
+                <div className="spec-list">
                   {service.offerings.map((o) => (
-                    <div className="offer-card" key={o.title}>
-                      <h3>{o.title}</h3>
-                      <p>{o.desc}</p>
+                    <div className="spec-item" key={o.title}>
+                      <span className="spec-item-title">{o.title}</span>
+                      <p className="spec-item-desc">{o.desc}</p>
                     </div>
                   ))}
                 </div>
@@ -63,51 +64,55 @@ export default function ServiceDetailPage({ params }: Props) {
 
               <div className="service-detail-block">
                 <span className="section-kicker">{service.whyLabel}</span>
-                <h2>{service.whyTitle}</h2>
-                <ul className="check-list">
+                <h2 className="section-title">{service.whyTitle}</h2>
+                <div className="numbered-list">
                   {service.whyItems.map((item) => (
-                    <li key={item}>
-                      <CheckIcon className="check-list-icon" />
-                      {item}
-                    </li>
+                    <div className="numbered-item" key={item}>
+                      <span className="numbered-index">
+                        <CheckIcon className="numbered-index-icon" />
+                      </span>
+                      <p className="numbered-desc" style={{ fontSize: "1rem", color: "var(--fx-ink)" }}>
+                        {item}
+                      </p>
+                    </div>
                   ))}
-                </ul>
+                </div>
               </div>
 
               <div className="service-detail-block">
                 <span className="section-kicker">{service.approachLabel}</span>
-                <h2>{service.approachTitle}</h2>
-                <div className="approach-grid">
-                  {service.approach.map((a) => (
-                    <div className="approach-card" key={a.title}>
-                      <h3>{a.title}</h3>
-                      <p>{a.desc}</p>
+                <h2 className="section-title">{service.approachTitle}</h2>
+                <div className="numbered-list">
+                  {service.approach.map((a, i) => (
+                    <div className="numbered-item" key={a.title}>
+                      <span className="numbered-index">{String(i + 1).padStart(2, "0")}</span>
+                      <div>
+                        <h3 className="numbered-title">{a.title}</h3>
+                        <p className="numbered-desc">{a.desc}</p>
+                      </div>
                     </div>
                   ))}
                 </div>
               </div>
             </div>
 
-            <aside className="service-detail-sidebar">
-              <div className="sidebar-card">
-                <h3>All Services</h3>
-                <ul className="sidebar-service-list">
-                  {SERVICES.map((s) => (
-                    <li key={s.slug}>
-                      <Link
-                        href={`/services/${s.slug}`}
-                        className={s.slug === service.slug ? "is-active" : undefined}
-                      >
-                        {s.name}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div className="sidebar-card sidebar-card-cta">
-                <h3>Ready to Get Started?</h3>
-                <p>Get a free, no-obligation quote for your project.</p>
-                <Link href="/contact" className="btn btn-orange sidebar-cta-btn">
+            <aside>
+              <nav className="service-nav-index">
+                {SERVICES.map((s) => (
+                  <Link
+                    key={s.slug}
+                    href={`/services/${s.slug}`}
+                    className={`service-nav-index-item ${s.slug === service.slug ? "is-active" : ""}`}
+                  >
+                    {s.name}
+                  </Link>
+                ))}
+              </nav>
+              <div className="service-sidebar-cta">
+                <p className="service-sidebar-cta-label">
+                  Ready to get started? Get a free, no-obligation quote for your project.
+                </p>
+                <Link href="/contact" className="btn-text">
                   Get a Free Quote
                   <ArrowRightIcon className="btn-icon" />
                 </Link>
@@ -116,16 +121,19 @@ export default function ServiceDetailPage({ params }: Props) {
           </div>
         </section>
 
-        <section className="section service-nav-section">
-          <div className="section-inner service-nav-grid">
-            <Link href={`/services/${prev.slug}`} className="service-nav-link service-nav-prev">
-              <span className="service-nav-label">Previous Service</span>
-              <span className="service-nav-name">{prev.name}</span>
-            </Link>
-            <Link href={`/services/${next.slug}`} className="service-nav-link service-nav-next">
-              <span className="service-nav-label">Next Service</span>
-              <span className="service-nav-name">{next.name}</span>
-            </Link>
+        <section className="section" style={{ paddingTop: 0 }}>
+          <div className="section-inner">
+            <div className="pager">
+              <Link href={`/services/${prev.slug}`} className="pager-link pager-prev">
+                <span className="pager-label">Previous Service</span>
+                <span className="pager-name">{prev.name}</span>
+              </Link>
+              <span className="pager-divider" />
+              <Link href={`/services/${next.slug}`} className="pager-link pager-next">
+                <span className="pager-label">Next Service</span>
+                <span className="pager-name">{next.name}</span>
+              </Link>
+            </div>
           </div>
         </section>
 
