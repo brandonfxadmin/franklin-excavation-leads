@@ -38,6 +38,7 @@ export async function POST(
       results.email = await sendEmail({
         to: lead.email,
         subject,
+        replyTo: "team@excavatefranklin.com",
         html: `
           <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;max-width:480px;margin:0 auto;padding:24px 0;">
             <img src="${EMAIL_LOGO_DATA_URI}" alt="Franklin Excavation" width="96" height="96" style="display:block;margin:0 auto 20px;border-radius:20px;" />
@@ -45,8 +46,16 @@ export async function POST(
             <p style="text-align:center;margin:28px 0;">
               <a href="${link}" style="background:#d9660b;color:#ffffff;padding:14px 28px;border-radius:8px;text-decoration:none;font-weight:700;font-size:15px;display:inline-block;">${linkLabel}</a>
             </p>
+            <p style="font-size:13px;line-height:1.5;color:#7a7361;text-align:center;">
+              Questions? Just reply to this email or call us at ${"615-282-5355"}.
+            </p>
+            <hr style="border:none;border-top:1px solid #e7dcc8;margin:24px 0;" />
+            <p style="font-size:12px;line-height:1.5;color:#a39c8f;text-align:center;">
+              Franklin Excavation · 1441 New Hwy 96 W Ste 2 #418, Franklin, TN 37064
+            </p>
           </div>
         `,
+        text: `${messageText}\n\n${linkLabel}: ${link}\n\nQuestions? Reply to this email or call 615-282-5355.\n\nFranklin Excavation, 1441 New Hwy 96 W Ste 2 #418, Franklin, TN 37064`,
       });
     }
   }
