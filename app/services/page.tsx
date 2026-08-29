@@ -18,23 +18,23 @@ export default function ServicesPage() {
       <main>
         <PageHero
           kicker="Our Services"
-          title="Excavation Services for Every Project"
+          title={<>Excavation services for <em>every</em> project</>}
           subtitle="From site prep to finished driveways, we bring the right equipment and experience to every job."
           image="/images/grading.jpg"
         />
 
         <section className="section">
           <div className="section-inner">
-            <div className="service-grid">
-              {SERVICES.map((service) => (
-                <ServiceCard service={service} key={service.slug} />
+            <div className="service-index">
+              {SERVICES.map((service, i) => (
+                <ServiceCard service={service} index={i + 1} key={service.slug} />
               ))}
             </div>
           </div>
         </section>
 
         <CTASection
-          title="Not Sure Which Service You Need?"
+          title={<>Not sure which service you <em>need</em>?</>}
           body="Tell us what's going on and we'll help you figure out the right fix."
         />
       </main>
