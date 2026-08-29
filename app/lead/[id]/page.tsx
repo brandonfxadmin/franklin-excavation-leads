@@ -111,7 +111,7 @@ export default function ClientLeadPage() {
   return (
     <div>
       <div className="header">
-        <div className="brand"><span className="dot" /> Franklin Excavation</div>
+        <div className="brand"><span className="dot" /> Franklin Excavation — Ballpark Estimator</div>
       </div>
       <div className="container">
         <div className="card">
