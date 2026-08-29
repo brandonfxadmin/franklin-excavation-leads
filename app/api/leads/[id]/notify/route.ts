@@ -17,15 +17,17 @@ export async function POST(
 
   const origin = req.nextUrl.origin;
   const link = `${origin}/lead/${lead.id}`;
+  const ogImage = `${origin}/fx-ballpark-og.png`;
   const firstName = lead.name.split(" ")[0];
+  const linkLabel = "FX Ballpark Estimate";
 
   const hasEstimate = lead.estimateLow !== null && lead.estimateHigh !== null;
   const subject = hasEstimate
     ? "Your ballpark estimate from Franklin Excavation"
     : "A quick form for your Franklin Excavation estimate";
-  const bodyText = hasEstimate
-    ? `Hi ${firstName}, your ballpark estimate is ready. View it here: ${link}`
-    : `Hi ${firstName}, please fill out this quick form so we can get you a ballpark estimate: ${link}`;
+  const messageText = hasEstimate
+    ? `Hi ${firstName}, your ballpark estimate is ready.`
+    : `Hi ${firstName}, please fill out this quick form so we can get you a ballpark estimate.`;
 
   const results: Record<string, { ok: boolean; error?: string }> = {};
 
@@ -36,7 +38,15 @@ export async function POST(
       results.email = await sendEmail({
         to: lead.email,
         subject,
-        html: `<p>${bodyText.replace(link, `<a href="${link}">${link}</a>`)}</p>`,
+        html: `
+          <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;max-width:480px;margin:0 auto;padding:24px 0;">
+            <img src="${ogImage}" alt="Franklin Excavation" width="96" height="96" style="display:block;margin:0 auto 20px;border-radius:20px;" />
+            <p style="font-size:16px;line-height:1.5;color:#221f1b;text-align:center;">${messageText}</p>
+            <p style="text-align:center;margin:28px 0;">
+              <a href="${link}" style="background:#d9660b;color:#ffffff;padding:14px 28px;border-radius:8px;text-decoration:none;font-weight:700;font-size:15px;display:inline-block;">${linkLabel}</a>
+            </p>
+          </div>
+        `,
       });
     }
   }
@@ -45,7 +55,10 @@ export async function POST(
     if (!lead.phone) {
       results.text = { ok: false, error: "No phone number on file for this lead." };
     } else {
-      results.text = await sendText({ to: lead.phone, content: bodyText });
+      results.text = await sendText({
+        to: lead.phone,
+        content: `${messageText} ${linkLabel}: ${link}`,
+      });
     }
   }
 
