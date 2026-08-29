@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import { upload } from "@vercel/blob/client";
 
 const emptyForm = {
   problemDescription: "",
@@ -19,6 +20,7 @@ export default function ClientLeadPage() {
   const [form, setForm] = useState(emptyForm);
   const [files, setFiles] = useState<File[]>([]);
   const [submitting, setSubmitting] = useState(false);
+  const [uploadStatus, setUploadStatus] = useState("");
   const [responding, setResponding] = useState(false);
 
   async function load() {
@@ -51,12 +53,20 @@ export default function ClientLeadPage() {
     e.preventDefault();
     setSubmitting(true);
 
-    // Upload any selected media first
-    for (const file of files) {
-      const fd = new FormData();
-      fd.append("file", file);
-      await fetch(`/api/leads/${id}/media`, { method: "POST", body: fd });
+    // Upload any selected media directly to storage (bypasses server upload size limits)
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      setUploadStatus(`Uploading ${i + 1} of ${files.length}...`);
+      try {
+        await upload(file.name, file, {
+          access: "public",
+          handleUploadUrl: `/api/leads/${id}/media`,
+        });
+      } catch (err) {
+        console.error("Upload failed for", file.name, err);
+      }
     }
+    setUploadStatus("");
 
     await fetch(`/api/leads/${id}`, {
       method: "PATCH",
@@ -155,7 +165,7 @@ export default function ClientLeadPage() {
 
               <div style={{ marginTop: 20 }}>
                 <button className="btn" type="submit" disabled={submitting}>
-                  {submitting ? "Submitting..." : "Submit for Ballpark Estimate"}
+                  {submitting ? (uploadStatus || "Submitting...") : "Submit for Ballpark Estimate"}
                 </button>
               </div>
             </form>
