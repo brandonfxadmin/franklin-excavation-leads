@@ -1,10 +1,18 @@
-import { Yantramanav } from "next/font/google";
+import { Yantramanav, Fraunces } from "next/font/google";
 import "./globals.css";
 
 const yantramanav = Yantramanav({
   subsets: ["latin"],
   weight: ["300", "400", "500", "700", "900"],
   variable: "--font-yantramanav",
+  display: "swap",
+});
+
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  style: ["italic", "normal"],
+  variable: "--font-fraunces",
   display: "swap",
 });
 
@@ -19,7 +27,7 @@ export const metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={yantramanav.variable}>
+    <html lang="en" className={`${yantramanav.variable} ${fraunces.variable}`}>
       <body>{children}</body>
     </html>
   );
