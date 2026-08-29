@@ -3,6 +3,7 @@ import { query } from "../../../../../lib/db";
 import { mapLead } from "../../../../../lib/mappers";
 import { sendEmail } from "../../../../../lib/resend";
 import { sendText } from "../../../../../lib/quo";
+import { EMAIL_LOGO_DATA_URI } from "../../../../../lib/email-logo";
 
 export async function POST(
   req: NextRequest,
@@ -17,7 +18,6 @@ export async function POST(
 
   const origin = req.nextUrl.origin;
   const link = `${origin}/lead/${lead.id}`;
-  const ogImage = `${origin}/fx-ballpark-og.png`;
   const firstName = lead.name.split(" ")[0];
   const linkLabel = "FX Ballpark Estimate";
 
@@ -40,7 +40,7 @@ export async function POST(
         subject,
         html: `
           <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;max-width:480px;margin:0 auto;padding:24px 0;">
-            <img src="${ogImage}" alt="Franklin Excavation" width="96" height="96" style="display:block;margin:0 auto 20px;border-radius:20px;" />
+            <img src="${EMAIL_LOGO_DATA_URI}" alt="Franklin Excavation" width="96" height="96" style="display:block;margin:0 auto 20px;border-radius:20px;" />
             <p style="font-size:16px;line-height:1.5;color:#221f1b;text-align:center;">${messageText}</p>
             <p style="text-align:center;margin:28px 0;">
               <a href="${link}" style="background:#d9660b;color:#ffffff;padding:14px 28px;border-radius:8px;text-decoration:none;font-weight:700;font-size:15px;display:inline-block;">${linkLabel}</a>
