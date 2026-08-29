@@ -94,18 +94,19 @@ export async function PATCH(
     return NextResponse.json(mapLead(result.rows[0]));
   }
 
-  // Generic admin edit (name/phone/address/notes)
+  // Generic admin edit (name/phone/email/address/notes)
   if (body.action === "update_details") {
-    const { name, phone, address, adminNotes } = body;
+    const { name, phone, address, adminNotes, email } = body;
     const result = await query(
       `UPDATE leads SET
         name = COALESCE($1, name),
-        phone = $2,
-        address = $3,
-        admin_notes = $4
-       WHERE id = $5
+        phone = COALESCE($2, phone),
+        address = COALESCE($3, address),
+        admin_notes = COALESCE($4, admin_notes),
+        email = COALESCE($5, email)
+       WHERE id = $6
        RETURNING *`,
-      [name || null, phone || null, address || null, adminNotes || null, params.id]
+      [name || null, phone || null, address || null, adminNotes || null, email || null, params.id]
     );
     return NextResponse.json(mapLead(result.rows[0]));
   }
