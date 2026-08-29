@@ -1,20 +1,28 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BUSINESS, SERVICES } from "../data/services";
 import { PhoneIcon, ArrowRightIcon } from "./icons";
 
 export default function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [servicesOpen, setServicesOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 30);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
-    <header className="site-header">
+    <header className={`site-header ${scrolled ? "is-scrolled" : ""}`}>
       <div className="site-header-inner">
         <Link href="/" className="brand" onClick={() => setMenuOpen(false)}>
           <span className="brand-mark">FRANKLIN</span>
-          <span className="brand-sub">EXCAVATION</span>
+          <span className="brand-sub">Excavation</span>
         </Link>
 
         <nav className={`site-nav ${menuOpen ? "is-open" : ""}`}>
@@ -77,7 +85,7 @@ export default function SiteHeader() {
             <PhoneIcon className="header-phone-icon" />
             <span>{BUSINESS.phone}</span>
           </a>
-          <Link href="/contact" className="btn btn-orange header-cta">
+          <Link href="/contact" className="btn-outline header-cta">
             Get a Free Quote
             <ArrowRightIcon className="btn-icon" />
           </Link>

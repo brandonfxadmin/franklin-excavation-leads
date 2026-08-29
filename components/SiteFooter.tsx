@@ -7,25 +7,28 @@ export default function SiteFooter() {
 
   return (
     <footer className="site-footer">
-      <div className="site-footer-inner">
-        <div className="footer-col footer-brand-col">
-          <div className="brand footer-brand">
-            <span className="brand-mark">FRANKLIN</span>
-            <span className="brand-sub">EXCAVATION</span>
-          </div>
-          <p className="footer-tagline">
-            Reliable grading, drainage, and excavation work for Franklin, TN and the
-            surrounding Middle Tennessee area.
+      <div className="footer-top">
+        <div className="footer-wordmark">FRANKLIN EXCAVATION</div>
+        <div className="footer-tagline-serif">Ground work, done right.</div>
+      </div>
+
+      <div className="footer-grid">
+        <div>
+          <p className="footer-col-desc">
+            Reliable grading, drainage, and excavation work for Franklin, TN and
+            the surrounding Middle Tennessee area.
           </p>
-          <ul className="footer-areas">
+          <div className="slash-list footer-areas">
             {SERVICE_AREA.map((area) => (
-              <li key={area}>{area}</li>
+              <span className="slash-list-item" key={area}>
+                {area}
+              </span>
             ))}
-          </ul>
+          </div>
         </div>
 
         <div className="footer-col">
-          <h4>Services</h4>
+          <h4 className="footer-heading">Services</h4>
           <ul>
             {SERVICES.map((s) => (
               <li key={s.slug}>
@@ -36,7 +39,7 @@ export default function SiteFooter() {
         </div>
 
         <div className="footer-col">
-          <h4>Company</h4>
+          <h4 className="footer-heading">Company</h4>
           <ul>
             <li>
               <Link href="/">Home</Link>
@@ -57,7 +60,7 @@ export default function SiteFooter() {
         </div>
 
         <div className="footer-col">
-          <h4>Contact</h4>
+          <h4 className="footer-heading">Contact</h4>
           <ul className="footer-contact">
             <li>
               <PhoneIcon className="footer-contact-icon" />

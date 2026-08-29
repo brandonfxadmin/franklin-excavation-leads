@@ -99,7 +99,7 @@ export default function QuoteForm() {
 
       {status === "error" ? <p className="quote-form-error">{errorMsg}</p> : null}
 
-      <button type="submit" className="btn btn-orange quote-form-submit" disabled={status === "submitting"}>
+      <button type="submit" className="btn-primary quote-form-submit" disabled={status === "submitting"}>
         {status === "submitting" ? "Sending..." : "Request My Free Quote"}
       </button>
     </form>

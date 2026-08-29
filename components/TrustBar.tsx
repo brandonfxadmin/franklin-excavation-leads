@@ -1,20 +1,21 @@
-const STATS = [
-  { value: "Licensed & Insured", label: "Full coverage on every job" },
-  { value: "Free Estimates", label: "No cost, no obligation" },
-  { value: "Locally Owned", label: "Serving Middle Tennessee" },
-  { value: "Clear Communication", label: "You'll know the plan and the cost" },
-];
+const CREDENTIALS = ["Licensed & Insured", "Free Estimates", "Locally Owned", "Clear Communication"];
 
 export default function TrustBar() {
   return (
-    <section className="trust-bar">
-      <div className="trust-bar-inner">
-        {STATS.map((stat) => (
-          <div className="trust-bar-item" key={stat.value}>
-            <span className="trust-bar-value">{stat.value}</span>
-            <span className="trust-bar-label">{stat.label}</span>
-          </div>
-        ))}
+    <section className="credentials-band">
+      <div className="credentials-inner">
+        <p className="credentials-statement">
+          Grading, drainage, and site work shouldn&apos;t be a gamble — we plan every job
+          around how water and soil actually behave on your property, not just what&apos;s
+          fastest to dig.
+        </p>
+        <div className="credentials-list">
+          {CREDENTIALS.map((item) => (
+            <span className="credentials-item" key={item}>
+              {item}
+            </span>
+          ))}
+        </div>
       </div>
     </section>
   );

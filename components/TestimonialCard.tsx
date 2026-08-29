@@ -6,14 +6,14 @@ type TestimonialCardProps = {
 
 export default function TestimonialCard({ quote, name, location }: TestimonialCardProps) {
   return (
-    <div className="testimonial-card">
-      <div className="testimonial-stars" aria-hidden="true">
-        ★★★★★
-      </div>
-      <p className="testimonial-quote">&ldquo;{quote}&rdquo;</p>
-      <div className="testimonial-author">
-        <span className="testimonial-name">{name}</span>
-        <span className="testimonial-location">{location}</span>
+    <div className="quote-slab">
+      <span className="quote-mark" aria-hidden="true">
+        &ldquo;
+      </span>
+      <p className="quote-text">{quote}</p>
+      <div className="quote-attribution">
+        <span className="quote-attribution-name">{name}</span>
+        <span>{location}</span>
       </div>
     </div>
   );
