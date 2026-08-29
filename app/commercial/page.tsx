@@ -47,28 +47,28 @@ const SERVICES_OFFERED = [
 
 const WHY_CONTRACTORS = [
   {
-    title: "On-Time Performance",
+    title: "On-time performance",
     desc: "We keep projects moving with realistic timelines and dependable service.",
   },
   {
-    title: "Project Coordination",
+    title: "Project coordination",
     desc: "We work smoothly with your team and subcontractors.",
   },
   {
-    title: "Licensed & Insured",
+    title: "Licensed & insured",
     desc: "Fully qualified to operate on commercial sites.",
   },
   {
-    title: "Locally Experienced",
+    title: "Locally experienced",
     desc: "We know the land, weather, and permitting requirements of Middle Tennessee.",
   },
 ];
 
 const CLIENTS = [
-  "Home builders and general contractors",
-  "Real estate developers",
-  "Commercial property managers and investors",
-  "Municipal and utility subcontractors",
+  "Home Builders & General Contractors",
+  "Real Estate Developers",
+  "Commercial Property Managers",
+  "Municipal & Utility Subcontractors",
 ];
 
 export default function CommercialPage() {
@@ -78,25 +78,24 @@ export default function CommercialPage() {
       <main>
         <PageHero
           kicker="Commercial Excavation in Franklin, TN"
-          title="Reliable Site Work for Builders, Contractors & Developers"
+          title={<>Reliable site work for builders, contractors &amp; <em>developers</em></>}
           subtitle="Efficient excavation solutions to keep your project on track."
           image="/images/crane-commercial.jpg"
         />
 
-        <section className="section">
+        <section className="section" style={{ paddingBottom: 0 }}>
           <div className="section-inner narrow">
             <p className="lede">
               Franklin Excavation provides dependable excavation services for
               small-to-mid scale commercial projects across Middle Tennessee.
+            </p>
+            <p style={{ marginTop: 28 }}>
               Whether you&apos;re prepping a site for construction, managing
               utilities for a development, or need large-scale grading and
               drainage solutions, we bring the experience and equipment to get the
-              job done right.
-            </p>
-            <p>
-              We understand that delays cost money. That&apos;s why we prioritize
-              reliability, clear communication, and doing things right the first
-              time — so your project keeps moving.
+              job done right. We understand that delays cost money. That&apos;s why
+              we prioritize reliability, clear communication, and doing things
+              right the first time — so your project keeps moving.
             </p>
           </div>
         </section>
@@ -104,73 +103,83 @@ export default function CommercialPage() {
         <section className="section commercial-clients-section">
           <div className="section-inner">
             <span className="section-kicker">Who We Work With</span>
-            <h2>Our Commercial Clients Include</h2>
-            <div className="clients-grid">
+            <div className="slash-list" style={{ marginTop: 8 }}>
               {CLIENTS.map((c) => (
-                <div className="clients-card" key={c}>
+                <span className="slash-list-item" key={c}>
                   {c}
-                </div>
+                </span>
               ))}
             </div>
           </div>
         </section>
 
-        <section className="section commercial-services-section">
+        <section className="section">
           <div className="section-inner">
             <span className="section-kicker">Comprehensive Excavation &amp; Site Prep</span>
-            <h2>Commercial Excavation Services We Provide</h2>
-            <div className="offer-grid offer-grid-icons">
+            <h2 className="section-title" style={{ marginBottom: 48 }}>
+              Commercial excavation services we provide
+            </h2>
+            <div className="spec-list">
               {SERVICES_OFFERED.map((s) => (
-                <div className="offer-card" key={s.title}>
-                  <s.icon className="offer-card-icon" />
-                  <h3>{s.title}</h3>
-                  <p>{s.desc}</p>
+                <div className="spec-item" key={s.title}>
+                  <span className="spec-item-title">
+                    <s.icon className="spec-item-icon" />
+                    {s.title}
+                  </span>
+                  <p className="spec-item-desc">{s.desc}</p>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        <section className="section pillars-section">
+        <section className="section" style={{ paddingTop: 0 }}>
           <div className="section-inner">
             <span className="section-kicker">Why Contractors Choose Us</span>
-            <h2>Built for Commercial Job Sites</h2>
-            <div className="pillars-grid">
-              {WHY_CONTRACTORS.map((p) => (
-                <div className="pillar-card" key={p.title}>
-                  <h3>{p.title}</h3>
-                  <p>{p.desc}</p>
+            <h2 className="section-title" style={{ marginBottom: 48 }}>
+              Built for commercial job sites
+            </h2>
+            <div className="numbered-list">
+              {WHY_CONTRACTORS.map((p, i) => (
+                <div className="numbered-item" key={p.title}>
+                  <span className="numbered-index">{String(i + 1).padStart(2, "0")}</span>
+                  <div>
+                    <h3 className="numbered-title">{p.title}</h3>
+                    <p className="numbered-desc">{p.desc}</p>
+                  </div>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        <section className="section who-we-serve-section">
+        <section className="section" style={{ paddingTop: 0 }}>
           <div className="section-inner who-grid">
             <div>
               <span className="section-kicker">Serving Franklin and Beyond</span>
-              <h2>Where We Work</h2>
+              <h2 className="section-title">Where we work</h2>
               <p>
                 We take on commercial excavation projects throughout Franklin and
                 the surrounding Middle Tennessee area, working alongside builders,
                 developers, and municipal subcontractors.
               </p>
             </div>
-            <div className="service-area-card">
-              <h3>Service Area</h3>
-              <ul className="service-area-list">
+            <div>
+              <span className="section-kicker">Service Area</span>
+              <div className="slash-list">
                 {SERVICE_AREA.map((area) => (
-                  <li key={area}>{area}</li>
+                  <span className="slash-list-item" key={area}>
+                    {area}
+                  </span>
                 ))}
-                <li>Surrounding Areas</li>
-              </ul>
+                <span className="slash-list-item">Surrounding Areas</span>
+              </div>
             </div>
           </div>
         </section>
 
         <CTASection
-          title="Let's Talk Commercial Site Work"
+          title={<>Let&apos;s talk commercial <em>site work</em></>}
           body="If you need a reliable excavation partner who respects your timeline, budget, and jobsite standards, let's connect. We'll provide a competitive quote and clear plan tailored to your scope."
         />
       </main>
