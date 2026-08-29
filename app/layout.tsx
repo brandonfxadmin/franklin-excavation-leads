@@ -1,8 +1,9 @@
 import "./globals.css";
 
 export const metadata = {
-  title: "Franklin Excavation — Lead Portal",
-  description: "Lead intake and ballpark estimate portal for Franklin Excavation",
+  title: "Franklin Excavation | Excavation, Grading & Site Prep",
+  description:
+    "Franklin Excavation provides excavation, grading, land clearing, and site preparation for homeowners and contractors. Licensed, insured, and locally owned — request a free estimate.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
