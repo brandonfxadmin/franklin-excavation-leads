@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   const { passcode } = await req.json();
-  const expected = process.env.ADMIN_PASSCODE || "franklin2026";
+  const expected = "franklin2026";
 
   if (passcode === expected) {
     const res = NextResponse.json({ ok: true });
