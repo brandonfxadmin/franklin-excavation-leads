@@ -14,7 +14,19 @@ export default function LeadDetailPage() {
   const [estLow, setEstLow] = useState("");
   const [estHigh, setEstHigh] = useState("");
   const [estNote, setEstNote] = useState("");
-  const [sending, setSending] = useState(false);
+  const [submittingEstimate, setSubmittingEstimate] = useState(false);
+
+  const [copied, setCopied] = useState(false);
+  const [email, setEmail] = useState("");
+  const [savingEmail, setSavingEmail] = useState(false);
+  const [emailSaved, setEmailSaved] = useState(false);
+
+  const [linkChannels, setLinkChannels] = useState({ email: false, text: false });
+  const [sendingLink, setSendingLink] = useState(false);
+  const [linkSendResult, setLinkSendResult] = useState<string | null>(null);
+
+  const [estimateChannels, setEstimateChannels] = useState({ email: false, text: false });
+  const [estimateSendResult, setEstimateSendResult] = useState<string | null>(null);
 
   async function load() {
     setLoading(true);
@@ -25,6 +37,7 @@ export default function LeadDetailPage() {
     setEstLow(data.lead.estimateLow ?? "");
     setEstHigh(data.lead.estimateHigh ?? "");
     setEstNote(data.lead.estimateNote ?? "");
+    setEmail(data.lead.email ?? "");
     setLoading(false);
   }
 
@@ -32,9 +45,53 @@ export default function LeadDetailPage() {
     load();
   }, [id]);
 
+  async function notify(channels: string[]): Promise<string> {
+    const res = await fetch(`/api/leads/${id}/notify`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ channels }),
+    });
+    const data = await res.json();
+    const parts: string[] = [];
+    if (data.results?.email) {
+      parts.push(data.results.email.ok ? "Emailed ✓" : `Email failed: ${data.results.email.error}`);
+    }
+    if (data.results?.text) {
+      parts.push(data.results.text.ok ? "Texted ✓" : `Text failed: ${data.results.text.error}`);
+    }
+    return parts.join(" · ");
+  }
+
+  async function handleSendLink() {
+    const selected = Object.entries(linkChannels)
+      .filter(([, v]) => v)
+      .map(([k]) => k);
+    if (selected.length === 0) return;
+    setSendingLink(true);
+    setLinkSendResult(null);
+    const summary = await notify(selected);
+    setSendingLink(false);
+    setLinkSendResult(summary);
+  }
+
+  async function saveEmail() {
+    setSavingEmail(true);
+    setEmailSaved(false);
+    await fetch(`/api/leads/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "update_details", email }),
+    });
+    setSavingEmail(false);
+    setEmailSaved(true);
+    setTimeout(() => setEmailSaved(false), 2000);
+    load();
+  }
+
   async function sendEstimate(e: React.FormEvent) {
     e.preventDefault();
-    setSending(true);
+    setSubmittingEstimate(true);
+    setEstimateSendResult(null);
     await fetch(`/api/leads/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -45,7 +102,16 @@ export default function LeadDetailPage() {
         estimateNote: estNote,
       }),
     });
-    setSending(false);
+
+    const selected = Object.entries(estimateChannels)
+      .filter(([, v]) => v)
+      .map(([k]) => k);
+    if (selected.length > 0) {
+      const summary = await notify(selected);
+      setEstimateSendResult(summary);
+    }
+
+    setSubmittingEstimate(false);
     load();
   }
 
@@ -58,11 +124,12 @@ export default function LeadDetailPage() {
   }
 
   const link = typeof window !== "undefined" ? `${window.location.origin}/lead/${id}` : "";
+  const waitingOnClient = lead.status === "link_sent" || lead.status === "started";
 
   return (
     <div className="container">
       <div className="header" style={{ margin: "-32px -20px 24px", borderRadius: 0 }}>
-        <div className="brand"><span className="dot" /> Franklin Excavation — Lead Portal</div>
+        <div className="brand"><span className="dot" /> Franklin Excavation — Ballpark Estimator</div>
         <Link href="/dashboard" className="btn ghost" style={{ color: "#fff", borderColor: "#555" }}>
           ← All Leads
         </Link>
@@ -84,16 +151,68 @@ export default function LeadDetailPage() {
             <p>{lead.adminNotes}</p>
           </>
         )}
+
+        <h3>Client email</h3>
+        <div className="stack" style={{ alignItems: "center" }}>
+          <input
+            type="email"
+            placeholder="client@example.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            style={{ flex: 1 }}
+          />
+          <button className="btn secondary" onClick={saveEmail} disabled={savingEmail}>
+            {savingEmail ? "Saving..." : emailSaved ? "Saved!" : "Save"}
+          </button>
+        </div>
+
         <h3>Client link</h3>
         <div className="stack" style={{ alignItems: "center" }}>
           <input type="text" readOnly value={link} style={{ flex: 1 }} />
-          <button className="btn secondary" onClick={() => navigator.clipboard.writeText(link)}>
-            Copy
+          <button
+            className="btn secondary"
+            onClick={() => {
+              navigator.clipboard.writeText(link);
+              setCopied(true);
+              setTimeout(() => setCopied(false), 2000);
+            }}
+          >
+            {copied ? "Copied!" : "Copy"}
           </button>
+        </div>
+
+        <div style={{ marginTop: 16 }}>
+          <label>Send this link</label>
+          <div className="stack" style={{ alignItems: "center", gap: 16 }}>
+            <label style={{ display: "flex", alignItems: "center", gap: 6, fontWeight: 400 }}>
+              <input
+                type="checkbox"
+                checked={linkChannels.email}
+                onChange={(e) => setLinkChannels({ ...linkChannels, email: e.target.checked })}
+              />
+              Email
+            </label>
+            <label style={{ display: "flex", alignItems: "center", gap: 6, fontWeight: 400 }}>
+              <input
+                type="checkbox"
+                checked={linkChannels.text}
+                onChange={(e) => setLinkChannels({ ...linkChannels, text: e.target.checked })}
+              />
+              Text
+            </label>
+            <button
+              className="btn"
+              disabled={sendingLink || (!linkChannels.email && !linkChannels.text)}
+              onClick={handleSendLink}
+            >
+              {sendingLink ? "Sending..." : "Send"}
+            </button>
+          </div>
+          {linkSendResult && <div className="hint" style={{ marginTop: 8 }}>{linkSendResult}</div>}
         </div>
       </div>
 
-      {lead.status === "link_sent" || lead.status === "started" ? (
+      {waitingOnClient ? (
         <div className="card">
           <h2>Waiting on client</h2>
           <p className="subtitle">
@@ -136,7 +255,7 @@ export default function LeadDetailPage() {
         </div>
       )}
 
-      {lead.status !== "link_sent" && lead.status !== "started" && (
+      {!waitingOnClient && (
         <div className="card">
           <h2>Ballpark estimate</h2>
           <form onSubmit={sendEstimate}>
@@ -164,15 +283,39 @@ export default function LeadDetailPage() {
             </div>
             <label>Note to client (optional)</label>
             <textarea value={estNote} onChange={(e) => setEstNote(e.target.value)} />
+
+            <div style={{ marginTop: 12 }}>
+              <label>Also send via</label>
+              <div className="stack" style={{ alignItems: "center", gap: 16 }}>
+                <label style={{ display: "flex", alignItems: "center", gap: 6, fontWeight: 400 }}>
+                  <input
+                    type="checkbox"
+                    checked={estimateChannels.email}
+                    onChange={(e) => setEstimateChannels({ ...estimateChannels, email: e.target.checked })}
+                  />
+                  Email
+                </label>
+                <label style={{ display: "flex", alignItems: "center", gap: 6, fontWeight: 400 }}>
+                  <input
+                    type="checkbox"
+                    checked={estimateChannels.text}
+                    onChange={(e) => setEstimateChannels({ ...estimateChannels, text: e.target.checked })}
+                  />
+                  Text
+                </label>
+              </div>
+            </div>
+
             <div style={{ marginTop: 16 }}>
-              <button className="btn" type="submit" disabled={sending}>
-                {sending
+              <button className="btn" type="submit" disabled={submittingEstimate}>
+                {submittingEstimate
                   ? "Sending..."
                   : lead.status === "estimate_sent" || lead.status === "approved" || lead.status === "declined"
                   ? "Update Estimate"
                   : "Send Estimate to Client"}
               </button>
             </div>
+            {estimateSendResult && <div className="hint" style={{ marginTop: 8 }}>{estimateSendResult}</div>}
           </form>
 
           {lead.clientResponse && (
