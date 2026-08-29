@@ -3,6 +3,7 @@ export function mapLead(row: any) {
           id: row.id,
           name: row.name,
           phone: row.phone,
+          email: row.email,
           address: row.address,
           adminNotes: row.admin_notes,
           status: row.status,
