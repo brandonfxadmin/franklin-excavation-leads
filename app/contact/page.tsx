@@ -25,19 +25,16 @@ export default function ContactPage() {
       <main>
         <PageHero
           kicker="Contact Franklin Excavation"
-          title="Get in Touch for a Free Estimate"
+          title={<>Get in touch for a <em>free</em> estimate</>}
           subtitle="Need expert excavation work? We're ready to help with land clearing, drainage, grading, and more."
           image="/images/hero-about.jpg"
         />
 
-        <section className="section contact-section">
+        <section className="section">
           <div className="section-inner contact-grid">
-            <div className="contact-info">
-              <h2>We Offer Free, No-Obligation Estimates</h2>
-              <p>
-                We offer free, no-obligation estimates and straightforward
-                communication from day one.
-              </p>
+            <div>
+              <span className="section-kicker">Free, No-Obligation Estimates</span>
+              <h2 className="section-title">We offer straightforward communication from day one</h2>
               <ul className="contact-info-list">
                 {CONTACT_ITEMS.map((item) => (
                   <li key={item.label}>
@@ -54,19 +51,21 @@ export default function ContactPage() {
                 ))}
               </ul>
 
-              <div className="service-area-card">
-                <h3>Our Service Area Includes</h3>
-                <ul className="service-area-list">
+              <div style={{ marginTop: 48 }}>
+                <span className="section-kicker">Service Area</span>
+                <div className="slash-list">
                   {SERVICE_AREA.map((area) => (
-                    <li key={area}>{area}</li>
+                    <span className="slash-list-item" key={area}>
+                      {area}
+                    </span>
                   ))}
-                  <li>Surrounding Areas</li>
-                </ul>
+                  <span className="slash-list-item">Surrounding Areas</span>
+                </div>
               </div>
             </div>
 
-            <div className="contact-form-wrap">
-              <h2>Request Your Free Quote</h2>
+            <div className="form-card">
+              <h2 className="section-title">Request Your Free Quote</h2>
               <p>
                 Fill out the form below and we&apos;ll get back to you promptly to
                 learn more about your project and how we can help.
