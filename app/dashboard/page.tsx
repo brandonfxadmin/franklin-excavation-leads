@@ -19,9 +19,14 @@ export default function DashboardPage() {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
   const [showNew, setShowNew] = useState(false);
-  const [form, setForm] = useState({ name: "", phone: "", address: "", adminNotes: "" });
+  const [form, setForm] = useState({ name: "", phone: "", email: "", address: "", adminNotes: "" });
   const [creating, setCreating] = useState(false);
   const [newLink, setNewLink] = useState<string | null>(null);
+  const [newLeadId, setNewLeadId] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+  const [channels, setChannels] = useState({ email: false, text: false });
+  const [sending, setSending] = useState(false);
+  const [sendResult, setSendResult] = useState<string | null>(null);
 
   async function loadLeads() {
     setLoading(true);
@@ -48,20 +53,51 @@ export default function DashboardPage() {
     if (res.ok) {
       const link = `${window.location.origin}/lead/${data.id}`;
       setNewLink(link);
-      setForm({ name: "", phone: "", address: "", adminNotes: "" });
+      setNewLeadId(data.id);
+      setCopied(false);
+      setSendResult(null);
+      setChannels({ email: false, text: false });
+      setForm({ name: "", phone: "", email: "", address: "", adminNotes: "" });
       loadLeads();
     }
+  }
+
+  async function handleSend() {
+    if (!newLeadId) return;
+    const selected = Object.entries(channels)
+      .filter(([, v]) => v)
+      .map(([k]) => k);
+    if (selected.length === 0) return;
+    setSending(true);
+    setSendResult(null);
+    const res = await fetch(`/api/leads/${newLeadId}/notify`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ channels: selected }),
+    });
+    const data = await res.json();
+    setSending(false);
+    const parts: string[] = [];
+    if (data.results?.email) {
+      parts.push(data.results.email.ok ? "Emailed ✓" : `Email failed: ${data.results.email.error}`);
+    }
+    if (data.results?.text) {
+      parts.push(data.results.text.ok ? "Texted ✓" : `Text failed: ${data.results.text.error}`);
+    }
+    setSendResult(parts.join(" · "));
   }
 
   return (
     <div className="container">
       <div className="header" style={{ margin: "-32px -20px 24px", borderRadius: 0 }}>
-        <div className="brand"><span className="dot" /> Franklin Excavation — Lead Portal</div>
+        <div className="brand"><span className="dot" /> Franklin Excavation — Ballpark Estimator</div>
         <button
           className="btn"
           onClick={() => {
             setShowNew((s) => !s);
             setNewLink(null);
+            setNewLeadId(null);
+            setSendResult(null);
           }}
         >
           + New Lead
@@ -78,11 +114,46 @@ export default function DashboardPage() {
                 <input type="text" readOnly value={newLink} style={{ flex: 1 }} />
                 <button
                   className="btn secondary"
-                  onClick={() => navigator.clipboard.writeText(newLink)}
+                  onClick={() => {
+                    navigator.clipboard.writeText(newLink);
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 2000);
+                  }}
                 >
-                  Copy
+                  {copied ? "Copied!" : "Copy"}
                 </button>
               </div>
+
+              <div style={{ marginTop: 20 }}>
+                <label>Send it now</label>
+                <div className="stack" style={{ alignItems: "center", gap: 16 }}>
+                  <label style={{ display: "flex", alignItems: "center", gap: 6, fontWeight: 400 }}>
+                    <input
+                      type="checkbox"
+                      checked={channels.email}
+                      onChange={(e) => setChannels({ ...channels, email: e.target.checked })}
+                    />
+                    Email
+                  </label>
+                  <label style={{ display: "flex", alignItems: "center", gap: 6, fontWeight: 400 }}>
+                    <input
+                      type="checkbox"
+                      checked={channels.text}
+                      onChange={(e) => setChannels({ ...channels, text: e.target.checked })}
+                    />
+                    Text
+                  </label>
+                  <button
+                    className="btn"
+                    disabled={sending || (!channels.email && !channels.text)}
+                    onClick={handleSend}
+                  >
+                    {sending ? "Sending..." : "Send"}
+                  </button>
+                </div>
+                {sendResult && <div className="hint" style={{ marginTop: 8 }}>{sendResult}</div>}
+              </div>
+
               <div style={{ marginTop: 16 }}>
                 <button className="btn ghost" onClick={() => setShowNew(false)}>
                   Done
@@ -108,14 +179,20 @@ export default function DashboardPage() {
                   />
                 </div>
                 <div>
-                  <label>Address / property location</label>
+                  <label>Email</label>
                   <input
-                    type="text"
-                    value={form.address}
-                    onChange={(e) => setForm({ ...form, address: e.target.value })}
+                    type="email"
+                    value={form.email}
+                    onChange={(e) => setForm({ ...form, email: e.target.value })}
                   />
                 </div>
               </div>
+              <label>Address / property location</label>
+              <input
+                type="text"
+                value={form.address}
+                onChange={(e) => setForm({ ...form, address: e.target.value })}
+              />
               <label>Brief description (what they said on the call)</label>
               <textarea
                 value={form.adminNotes}
