@@ -66,11 +66,12 @@ a { color: inherit; }
   gap: 10px;
 }
 
-.header .brand .dot {
-  width: 10px;
-  height: 10px;
-  background: var(--orange);
-  border-radius: 2px;
+.header .brand .brand-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 7px;
+  flex: none;
+  display: block;
 }
 
 .container {
