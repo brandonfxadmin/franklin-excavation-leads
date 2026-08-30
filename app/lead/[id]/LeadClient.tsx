@@ -238,7 +238,7 @@ export default function LeadClient() {
                     Maybe Later
                   </button>
                   <button className="btn ghost" style={{ color: "#fff", borderColor: "#666" }} disabled={responding} onClick={() => respond("declined")}>
-                    Not Right Now
+                    Not Interested
                   </button>
                 </div>
               )}
