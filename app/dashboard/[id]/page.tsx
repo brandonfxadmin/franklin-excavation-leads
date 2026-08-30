@@ -28,7 +28,7 @@ export default function LeadDetailPage() {
   const [estimateChannels, setEstimateChannels] = useState({ email: false, text: false });
   const [estimateSendResult, setEstimateSendResult] = useState<string | null>(null);
 
-  async function load() {
+  async function load(applyDefaultChannels = false) {
     setLoading(true);
     const res = await fetch(`/api/leads/${id}`);
     const data = await res.json();
@@ -38,11 +38,19 @@ export default function LeadDetailPage() {
     setEstHigh(data.lead.estimateHigh ?? "");
     setEstNote(data.lead.estimateNote ?? "");
     setEmail(data.lead.email ?? "");
+    if (applyDefaultChannels && data.lead.preferredChannels) {
+      const defaults = {
+        email: data.lead.preferredChannels.includes("email"),
+        text: data.lead.preferredChannels.includes("text"),
+      };
+      setLinkChannels(defaults);
+      setEstimateChannels(defaults);
+    }
     setLoading(false);
   }
 
   useEffect(() => {
-    load();
+    load(true);
   }, [id]);
 
   async function notify(channels: string[]): Promise<string> {
