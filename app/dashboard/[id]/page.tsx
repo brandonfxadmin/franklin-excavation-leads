@@ -324,7 +324,10 @@ export default function LeadDetailPage() {
               <button className="btn" type="submit" disabled={submittingEstimate}>
                 {submittingEstimate
                   ? "Sending..."
-                  : lead.status === "estimate_sent" || lead.status === "approved" || lead.status === "declined"
+                  : lead.status === "estimate_sent" ||
+                    lead.status === "approved" ||
+                    lead.status === "declined" ||
+                    lead.status === "maybe_later"
                   ? "Update Estimate"
                   : "Send Estimate to Client"}
               </button>
@@ -336,7 +339,11 @@ export default function LeadDetailPage() {
             <div style={{ marginTop: 20 }}>
               <h3>Client response</h3>
               <span className={`badge ${lead.clientResponse}`}>
-                {lead.clientResponse === "approved" ? "Approved site visit" : "Declined"}
+                {lead.clientResponse === "approved"
+                  ? "Approved site visit"
+                  : lead.clientResponse === "maybe_later"
+                  ? "Maybe later"
+                  : "Declined"}
               </span>
             </div>
           )}
