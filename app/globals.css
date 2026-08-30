@@ -205,6 +205,8 @@ textarea { resize: vertical; min-height: 80px; }
   margin-bottom: 20px;
 }
 .tab-btn {
+  display: inline-flex;
+  align-items: center;
   background: #fff;
   border: 1px solid var(--border);
   color: #5c5646;
@@ -213,6 +215,7 @@ textarea { resize: vertical; min-height: 80px; }
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
+  text-decoration: none;
 }
 .tab-btn:hover { border-color: var(--orange); color: var(--orange-dark); }
 .tab-btn.active { background: var(--charcoal); border-color: var(--charcoal); color: var(--tan); }
