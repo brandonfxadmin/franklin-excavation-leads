@@ -121,11 +121,15 @@ export default function LeadClient() {
       </div>
       <div className="container">
         <div className="card">
-          <h1>Hi {lead.name.split(" ")[0]}, let's get you a ballpark price</h1>
+          <h1>
+            {lead.status === "link_sent" || lead.status === "started"
+              ? `Hi ${lead.name.split(" ")[0]}, let's get you a ballpark price`
+              : "Thank you for submitting your information"}
+          </h1>
           <p className="subtitle">
             {lead.status === "link_sent" || lead.status === "started"
               ? "Tell us about the project below. The more detail (and photos/video) you share, the more accurate your ballpark estimate will be and the faster we can get it to you without needing to collect more information."
-              : "Thank you for submitting your information! We will reach back out shortly with your ballpark estimate or a request for more information."}
+              : "We will reach back out shortly with your ballpark estimate or a request for more information."}
           </p>
 
           {(lead.status === "link_sent" || lead.status === "started") && (
@@ -207,15 +211,6 @@ export default function LeadClient() {
                   </div>
                 </>
               )}
-            </div>
-          )}
-
-          {lead.status === "form_completed" && (
-            <div className="card" style={{ marginTop: 20, background: "#faf6ee" }}>
-              <p style={{ margin: 0 }}>
-                Thanks — we've got everything we need. Brandon will review this and send your
-                ballpark estimate right here as soon as it's ready.
-              </p>
             </div>
           )}
 
