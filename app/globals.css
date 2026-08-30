@@ -62,8 +62,12 @@ a { color: inherit; }
   letter-spacing: 0.03em;
   text-transform: uppercase;
   display: flex;
+  flex-direction: row;
   align-items: center;
   gap: 10px;
+  line-height: 1.2;
+  text-decoration: none;
+  color: inherit;
 }
 
 .header .brand .brand-icon {
