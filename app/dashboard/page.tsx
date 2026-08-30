@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { STATUS_LABELS, CATEGORY_LABELS } from "../../lib/mappers";
+import CategoryTabs, { LEAD_CATEGORIES } from "../../components/CategoryTabs";
 
 type Lead = {
   id: string;
@@ -15,13 +16,6 @@ type Lead = {
   estimateLow: number | null;
   estimateHigh: number | null;
 };
-
-const CATEGORIES = [
-  { key: "maybe_later", label: "Maybe Later" },
-  { key: "not_interested", label: "Not Interested" },
-  { key: "need_more_info", label: "Need More Info" },
-  { key: "schedule_site_visit", label: "Schedule Site Visit" },
-];
 
 export default function DashboardPage() {
   const [leads, setLeads] = useState<Lead[]>([]);
@@ -50,7 +44,14 @@ export default function DashboardPage() {
 
   useEffect(() => {
     loadLeads();
+    const tab = new URLSearchParams(window.location.search).get("tab");
+    if (tab) setActiveTab(tab);
   }, []);
+
+  function handleTabSelect(key: string) {
+    setActiveTab(key);
+    window.history.replaceState(null, "", key === "active" ? "/dashboard" : `/dashboard?tab=${key}`);
+  }
 
   useEffect(() => {
     if (!openMenuId) return;
@@ -90,9 +91,6 @@ export default function DashboardPage() {
     activeTab === "active"
       ? leads.filter((l) => !l.category)
       : leads.filter((l) => l.category === activeTab);
-  const countFor = (key: string) => leads.filter((l) => l.category === key).length;
-  const activeCount = leads.filter((l) => !l.category).length;
-
   async function handleCreate(e: React.FormEvent) {
     e.preventDefault();
     setCreating(true);
@@ -328,23 +326,7 @@ export default function DashboardPage() {
       <div className="card">
         <h2>All Leads</h2>
 
-        <div className="tab-bar">
-          <button
-            className={`tab-btn ${activeTab === "active" ? "active" : ""}`}
-            onClick={() => setActiveTab("active")}
-          >
-            Active <span className="count">({activeCount})</span>
-          </button>
-          {CATEGORIES.map((c) => (
-            <button
-              key={c.key}
-              className={`tab-btn ${activeTab === c.key ? "active" : ""}`}
-              onClick={() => setActiveTab(c.key)}
-            >
-              {c.label} <span className="count">({countFor(c.key)})</span>
-            </button>
-          ))}
-        </div>
+        <CategoryTabs activeTab={activeTab} onSelect={handleTabSelect} leads={leads} />
 
         {loading ? (
           <p>Loading...</p>
@@ -391,7 +373,7 @@ export default function DashboardPage() {
                 {openMenuId === lead.id && (
                   <div className="lead-menu-dropdown">
                     <div className="lead-menu-label">Move to</div>
-                    {CATEGORIES.map((c) => (
+                    {LEAD_CATEGORIES.map((c) => (
                       <button
                         key={c.key}
                         className="lead-menu-item"
