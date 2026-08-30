@@ -129,7 +129,13 @@ export default function LeadDetailPage() {
   return (
     <div className="container">
       <div className="header" style={{ margin: "-32px -20px 24px", borderRadius: 0 }}>
-        <div className="brand"><img src="/fx-icon.png" alt="" className="brand-icon" /> Franklin Excavation — Ballpark Estimator</div>
+        <div className="brand">
+          <img src="/fx-icon.png" alt="" className="brand-icon" />
+          <span className="brand-text">
+            <span className="brand-line1">Franklin Excavation</span>
+            <span className="brand-line2">Ballpark Estimator</span>
+          </span>
+        </div>
         <Link href="/dashboard" className="btn ghost" style={{ color: "#fff", borderColor: "#555" }}>
           ← All Leads
         </Link>
