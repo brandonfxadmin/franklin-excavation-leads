@@ -124,8 +124,8 @@ export default function LeadClient() {
           <h1>Hi {lead.name.split(" ")[0]}, let's get you a ballpark price</h1>
           <p className="subtitle">
             Tell us about the project below. The more detail (and photos/video) you share, the
-            more accurate your ballpark estimate will be — and the faster we can get it to you
-            without needing to schedule a site visit first.
+            more accurate your ballpark estimate will be and the faster we can get it to you
+            without needing to collect more information.
           </p>
 
           {(lead.status === "link_sent" || lead.status === "started") && (
