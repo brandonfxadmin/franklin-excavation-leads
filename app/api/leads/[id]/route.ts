@@ -94,6 +94,21 @@ export async function PATCH(
     return NextResponse.json(mapLead(result.rows[0]));
   }
 
+  // Admin files a lead into a follow-up category from the dashboard dropdown
+  // (or clears it back to "Active" by passing category: null)
+  if (body.action === "set_category") {
+    const { category } = body;
+    const allowed = [null, "maybe_later", "not_interested", "need_more_info", "schedule_site_visit"];
+    if (!allowed.includes(category)) {
+      return NextResponse.json({ error: "Invalid category" }, { status: 400 });
+    }
+    const result = await query(
+      `UPDATE leads SET category = $1 WHERE id = $2 RETURNING *`,
+      [category, params.id]
+    );
+    return NextResponse.json(mapLead(result.rows[0]));
+  }
+
   // Generic admin edit (name/phone/email/address/notes)
   if (body.action === "update_details") {
     const { name, phone, address, adminNotes, email } = body;
