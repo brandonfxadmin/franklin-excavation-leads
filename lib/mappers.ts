@@ -7,6 +7,7 @@ export function mapLead(row: any) {
           address: row.address,
           adminNotes: row.admin_notes,
           status: row.status,
+          category: row.category ?? null,
           problemDescription: row.problem_description,
           additionalDetails: row.additional_details,
           timeline: row.timeline,
@@ -39,4 +40,11 @@ export const STATUS_LABELS: Record<string, string> = {
     estimate_sent: "Estimate Sent",
     approved: "Approved",
     declined: "Declined",
+};
+
+export const CATEGORY_LABELS: Record<string, string> = {
+    maybe_later: "Maybe Later",
+    not_interested: "Not Interested",
+    need_more_info: "Need More Info",
+    schedule_site_visit: "Schedule Site Visit",
 };
