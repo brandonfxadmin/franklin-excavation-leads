@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { STATUS_LABELS } from "../../lib/mappers";
+import { STATUS_LABELS, CATEGORY_LABELS } from "../../lib/mappers";
 
 type Lead = {
   id: string;
@@ -10,10 +10,18 @@ type Lead = {
   phone: string | null;
   address: string | null;
   status: string;
+  category: string | null;
   createdAt: string;
   estimateLow: number | null;
   estimateHigh: number | null;
 };
+
+const CATEGORIES = [
+  { key: "maybe_later", label: "Maybe Later" },
+  { key: "not_interested", label: "Not Interested" },
+  { key: "need_more_info", label: "Need More Info" },
+  { key: "schedule_site_visit", label: "Schedule Site Visit" },
+];
 
 export default function DashboardPage() {
   const [leads, setLeads] = useState<Lead[]>([]);
@@ -27,6 +35,10 @@ export default function DashboardPage() {
   const [channels, setChannels] = useState({ email: false, text: false });
   const [sending, setSending] = useState(false);
   const [sendResult, setSendResult] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<string>("all");
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const [busyId, setBusyId] = useState<string | null>(null);
+  const menuRef = useRef<HTMLDivElement | null>(null);
 
   async function loadLeads() {
     setLoading(true);
@@ -39,6 +51,43 @@ export default function DashboardPage() {
   useEffect(() => {
     loadLeads();
   }, []);
+
+  useEffect(() => {
+    if (!openMenuId) return;
+    function handleClickOutside(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setOpenMenuId(null);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [openMenuId]);
+
+  async function handleSetCategory(leadId: string, category: string | null) {
+    setOpenMenuId(null);
+    setBusyId(leadId);
+    await fetch(`/api/leads/${leadId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "set_category", category }),
+    });
+    await loadLeads();
+    setBusyId(null);
+  }
+
+  async function handleDelete(leadId: string, name: string) {
+    setOpenMenuId(null);
+    if (!window.confirm(`Permanently delete ${name}? This can't be undone — their link will stop working immediately.`)) {
+      return;
+    }
+    setBusyId(leadId);
+    await fetch(`/api/leads/${leadId}`, { method: "DELETE" });
+    await loadLeads();
+    setBusyId(null);
+  }
+
+  const visibleLeads = activeTab === "all" ? leads : leads.filter((l) => l.category === activeTab);
+  const countFor = (key: string) => leads.filter((l) => l.category === key).length;
 
   async function handleCreate(e: React.FormEvent) {
     e.preventDefault();
@@ -210,28 +259,96 @@ export default function DashboardPage() {
 
       <div className="card">
         <h2>All Leads</h2>
+
+        <div className="tab-bar">
+          <button
+            className={`tab-btn ${activeTab === "all" ? "active" : ""}`}
+            onClick={() => setActiveTab("all")}
+          >
+            All <span className="count">({leads.length})</span>
+          </button>
+          {CATEGORIES.map((c) => (
+            <button
+              key={c.key}
+              className={`tab-btn ${activeTab === c.key ? "active" : ""}`}
+              onClick={() => setActiveTab(c.key)}
+            >
+              {c.label} <span className="count">({countFor(c.key)})</span>
+            </button>
+          ))}
+        </div>
+
         {loading ? (
           <p>Loading...</p>
-        ) : leads.length === 0 ? (
-          <p className="subtitle">No leads yet. Click "+ New Lead" to add one.</p>
+        ) : visibleLeads.length === 0 ? (
+          <p className="subtitle">
+            {activeTab === "all"
+              ? 'No leads yet. Click "+ New Lead" to add one.'
+              : "No leads in this category."}
+          </p>
         ) : (
-          leads.map((lead) => (
-            <Link key={lead.id} href={`/dashboard/${lead.id}`} className="lead-row">
-              <div>
-                <div className="name">{lead.name}</div>
-                <div className="meta">
-                  {lead.address || "No address"} · {lead.phone || "No phone"}
-                </div>
-              </div>
-              <div style={{ textAlign: "right" }}>
-                <span className={`badge ${lead.status}`}>{STATUS_LABELS[lead.status]}</span>
-                {lead.estimateLow && (
+          visibleLeads.map((lead) => (
+            <div key={lead.id} className="lead-row">
+              <Link href={`/dashboard/${lead.id}`} className="lead-row-link">
+                <div>
+                  <div className="name">{lead.name}</div>
                   <div className="meta">
-                    ${lead.estimateLow.toLocaleString()}–${lead.estimateHigh?.toLocaleString()}
+                    {lead.address || "No address"} · {lead.phone || "No phone"}
+                  </div>
+                </div>
+                <div style={{ textAlign: "right" }}>
+                  <div className="badges">
+                    <span className={`badge ${lead.status}`}>{STATUS_LABELS[lead.status]}</span>
+                    {lead.category && (
+                      <span className={`badge ${lead.category}`}>{CATEGORY_LABELS[lead.category]}</span>
+                    )}
+                  </div>
+                  {lead.estimateLow && (
+                    <div className="meta">
+                      ${lead.estimateLow.toLocaleString()}–${lead.estimateHigh?.toLocaleString()}
+                    </div>
+                  )}
+                </div>
+              </Link>
+
+              <div className="lead-menu" ref={openMenuId === lead.id ? menuRef : undefined}>
+                <button
+                  className="lead-menu-btn"
+                  disabled={busyId === lead.id}
+                  onClick={() => setOpenMenuId(openMenuId === lead.id ? null : lead.id)}
+                  aria-label="Lead options"
+                >
+                  ⋮
+                </button>
+                {openMenuId === lead.id && (
+                  <div className="lead-menu-dropdown">
+                    <div className="lead-menu-label">Move to</div>
+                    {CATEGORIES.map((c) => (
+                      <button
+                        key={c.key}
+                        className="lead-menu-item"
+                        disabled={lead.category === c.key}
+                        onClick={() => handleSetCategory(lead.id, c.key)}
+                      >
+                        {c.label}
+                      </button>
+                    ))}
+                    {lead.category && (
+                      <button className="lead-menu-item" onClick={() => handleSetCategory(lead.id, null)}>
+                        Back to Active
+                      </button>
+                    )}
+                    <div className="lead-menu-divider" />
+                    <button
+                      className="lead-menu-item danger"
+                      onClick={() => handleDelete(lead.id, lead.name)}
+                    >
+                      Permanently Delete
+                    </button>
                   </div>
                 )}
               </div>
-            </Link>
+            </div>
           ))
         )}
       </div>
