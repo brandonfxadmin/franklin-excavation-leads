@@ -47,35 +47,58 @@ a { color: inherit; }
 .header {
   background: var(--charcoal);
   color: var(--tan);
-  padding: 18px 24px;
+  padding: 14px 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
   position: sticky;
   top: 0;
   z-index: 10;
+  flex-wrap: wrap;
 }
 
 .header .brand {
-  font-weight: 800;
-  font-size: 1.15rem;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
   display: flex;
   flex-direction: row;
   align-items: center;
   gap: 10px;
-  line-height: 1.2;
   text-decoration: none;
   color: inherit;
+  min-width: 0;
 }
 
 .header .brand .brand-icon {
-  width: 30px;
-  height: 30px;
-  border-radius: 7px;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
   flex: none;
   display: block;
+}
+
+.header .brand .brand-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.header .brand .brand-line1 {
+  font-weight: 800;
+  font-size: 1.05rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  line-height: 1.25;
+  white-space: nowrap;
+}
+
+.header .brand .brand-line2 {
+  font-weight: 600;
+  font-size: 0.76rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1.25;
+  color: var(--tan-2);
+  white-space: nowrap;
 }
 
 .container {
