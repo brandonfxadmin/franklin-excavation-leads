@@ -76,20 +76,28 @@ export async function PATCH(
     return NextResponse.json(mapLead(result.rows[0]));
   }
 
-  // Client responds to the estimate
+  // Client responds to the estimate. Each response also automatically files the
+  // lead into the matching dashboard follow-up category, so Brandon doesn't have
+  // to manually move it himself.
   if (body.action === "client_response") {
-    const { response } = body; // "approved" | "declined"
-    if (response !== "approved" && response !== "declined") {
+    const { response } = body; // "approved" | "declined" | "maybe_later"
+    const categoryForResponse: Record<string, string> = {
+      approved: "schedule_site_visit",
+      declined: "not_interested",
+      maybe_later: "maybe_later",
+    };
+    if (!categoryForResponse[response]) {
       return NextResponse.json({ error: "Invalid response" }, { status: 400 });
     }
     const result = await query(
       `UPDATE leads SET
         client_response = $1,
         status = $1,
-        client_response_at = now()
-       WHERE id = $2
+        client_response_at = now(),
+        category = $2
+       WHERE id = $3
        RETURNING *`,
-      [response, params.id]
+      [response, categoryForResponse[response], params.id]
     );
     return NextResponse.json(mapLead(result.rows[0]));
   }
