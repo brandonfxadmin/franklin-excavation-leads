@@ -111,7 +111,13 @@ export default function LeadClient() {
   return (
     <div>
       <div className="header">
-        <div className="brand"><img src="/fx-icon.png" alt="" className="brand-icon" /> Franklin Excavation — Ballpark Estimator</div>
+        <div className="brand">
+          <img src="/fx-icon.png" alt="" className="brand-icon" />
+          <span className="brand-text">
+            <span className="brand-line1">Franklin Excavation</span>
+            <span className="brand-line2">Ballpark Estimator</span>
+          </span>
+        </div>
       </div>
       <div className="container">
         <div className="card">
