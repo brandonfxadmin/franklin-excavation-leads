@@ -35,7 +35,7 @@ export default function DashboardPage() {
   const [channels, setChannels] = useState({ email: false, text: false });
   const [sending, setSending] = useState(false);
   const [sendResult, setSendResult] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<string>("all");
+  const [activeTab, setActiveTab] = useState<string>("active");
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement | null>(null);
@@ -86,8 +86,12 @@ export default function DashboardPage() {
     setBusyId(null);
   }
 
-  const visibleLeads = activeTab === "all" ? leads : leads.filter((l) => l.category === activeTab);
+  const visibleLeads =
+    activeTab === "active"
+      ? leads.filter((l) => !l.category)
+      : leads.filter((l) => l.category === activeTab);
   const countFor = (key: string) => leads.filter((l) => l.category === key).length;
+  const activeCount = leads.filter((l) => !l.category).length;
 
   async function handleCreate(e: React.FormEvent) {
     e.preventDefault();
@@ -262,10 +266,10 @@ export default function DashboardPage() {
 
         <div className="tab-bar">
           <button
-            className={`tab-btn ${activeTab === "all" ? "active" : ""}`}
-            onClick={() => setActiveTab("all")}
+            className={`tab-btn ${activeTab === "active" ? "active" : ""}`}
+            onClick={() => setActiveTab("active")}
           >
-            All <span className="count">({leads.length})</span>
+            Active <span className="count">({activeCount})</span>
           </button>
           {CATEGORIES.map((c) => (
             <button
@@ -282,8 +286,8 @@ export default function DashboardPage() {
           <p>Loading...</p>
         ) : visibleLeads.length === 0 ? (
           <p className="subtitle">
-            {activeTab === "all"
-              ? 'No leads yet. Click "+ New Lead" to add one.'
+            {activeTab === "active"
+              ? 'No active leads. Click "+ New Lead" to add one.'
               : "No leads in this category."}
           </p>
         ) : (
