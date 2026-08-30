@@ -43,6 +43,7 @@ export const STATUS_LABELS: Record<string, string> = {
     estimate_sent: "Estimate Sent",
     approved: "Approved",
     declined: "Declined",
+    maybe_later: "Maybe Later",
 };
 
 export const CATEGORY_LABELS: Record<string, string> = {
