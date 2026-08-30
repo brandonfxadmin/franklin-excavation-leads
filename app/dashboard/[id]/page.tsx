@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { STATUS_LABELS } from "../../../lib/mappers";
+import CategoryTabs from "../../../components/CategoryTabs";
 
 export default function LeadDetailPage() {
   const params = useParams();
@@ -147,6 +148,10 @@ export default function LeadDetailPage() {
         <Link href="/dashboard" className="btn ghost" style={{ color: "#fff", borderColor: "#555" }}>
           ← All Leads
         </Link>
+      </div>
+
+      <div className="card" style={{ paddingBottom: 4 }}>
+        <CategoryTabs activeTab={lead.category || "active"} />
       </div>
 
       <div className="card">
