@@ -78,7 +78,7 @@ export default function LeadClient() {
     load();
   }
 
-  async function respond(response: "approved" | "declined") {
+  async function respond(response: "approved" | "declined" | "maybe_later") {
     setResponding(true);
     await fetch(`/api/leads/${id}`, {
       method: "PATCH",
@@ -214,7 +214,10 @@ export default function LeadClient() {
             </div>
           )}
 
-          {(lead.status === "estimate_sent" || lead.status === "approved" || lead.status === "declined") && (
+          {(lead.status === "estimate_sent" ||
+            lead.status === "approved" ||
+            lead.status === "declined" ||
+            lead.status === "maybe_later") && (
             <div className="estimate-box">
               <div>Your ballpark estimate</div>
               <div className="amount">
@@ -231,6 +234,9 @@ export default function LeadClient() {
                   <button className="btn" disabled={responding} onClick={() => respond("approved")}>
                     Approve Site Visit
                   </button>
+                  <button className="btn ghost" style={{ color: "#fff", borderColor: "#666" }} disabled={responding} onClick={() => respond("maybe_later")}>
+                    Maybe Later
+                  </button>
                   <button className="btn ghost" style={{ color: "#fff", borderColor: "#666" }} disabled={responding} onClick={() => respond("declined")}>
                     Not Right Now
                   </button>
@@ -240,6 +246,11 @@ export default function LeadClient() {
               {lead.status === "approved" && (
                 <p style={{ marginTop: 16, fontWeight: 700 }}>
                   Thanks! We'll be in touch to schedule your site visit.
+                </p>
+              )}
+              {lead.status === "maybe_later" && (
+                <p style={{ marginTop: 16 }}>
+                  No problem — we'll check back in with you soon.
                 </p>
               )}
               {lead.status === "declined" && (
