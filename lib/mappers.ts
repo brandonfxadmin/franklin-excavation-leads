@@ -8,6 +8,9 @@ export function mapLead(row: any) {
           adminNotes: row.admin_notes,
           status: row.status,
           category: row.category ?? null,
+          preferredChannels: row.preferred_channels
+            ? row.preferred_channels.split(",")
+            : null,
           problemDescription: row.problem_description,
           additionalDetails: row.additional_details,
           timeline: row.timeline,
