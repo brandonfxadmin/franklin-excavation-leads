@@ -123,9 +123,9 @@ export default function LeadClient() {
         <div className="card">
           <h1>Hi {lead.name.split(" ")[0]}, let's get you a ballpark price</h1>
           <p className="subtitle">
-            Tell us about the project below. The more detail (and photos/video) you share, the
-            more accurate your ballpark estimate will be and the faster we can get it to you
-            without needing to collect more information.
+            {lead.status === "link_sent" || lead.status === "started"
+              ? "Tell us about the project below. The more detail (and photos/video) you share, the more accurate your ballpark estimate will be and the faster we can get it to you without needing to collect more information."
+              : "Thank you for submitting your information! We will reach back out shortly with your ballpark estimate or a request for more information."}
           </p>
 
           {(lead.status === "link_sent" || lead.status === "started") && (
