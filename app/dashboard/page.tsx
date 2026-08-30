@@ -143,13 +143,13 @@ export default function DashboardPage() {
   return (
     <div className="container">
       <div className="header" style={{ margin: "-32px -20px 24px", borderRadius: 0 }}>
-        <div className="brand">
+        <Link href="/dashboard" className="brand">
           <img src="/fx-icon.png" alt="" className="brand-icon" />
           <span className="brand-text">
             <span className="brand-line1">Franklin Excavation</span>
             <span className="brand-line2">Ballpark Estimator</span>
           </span>
-        </div>
+        </Link>
         <button
           className="btn"
           onClick={() => {
@@ -159,7 +159,7 @@ export default function DashboardPage() {
             setSendResult(null);
           }}
         >
-          + New Lead
+          {showNew ? "← All Leads" : "+ New Lead"}
         </button>
       </div>
 
@@ -257,9 +257,16 @@ export default function DashboardPage() {
                 value={form.adminNotes}
                 onChange={(e) => setForm({ ...form, adminNotes: e.target.value })}
               />
-              <div style={{ marginTop: 16 }}>
+              <div className="stack" style={{ marginTop: 16, alignItems: "center" }}>
                 <button className="btn" type="submit" disabled={creating}>
                   {creating ? "Creating..." : "Create Lead & Get Link"}
+                </button>
+                <button
+                  className="btn ghost"
+                  type="button"
+                  onClick={() => setShowNew(false)}
+                >
+                  Cancel
                 </button>
               </div>
             </form>
