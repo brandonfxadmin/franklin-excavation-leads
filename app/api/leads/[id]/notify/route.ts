@@ -16,6 +16,15 @@ export async function POST(
   }
   const lead = mapLead(result.rows[0]);
 
+  // The first time a lead is notified, lock in whichever channel(s) were used
+  // as the default for all future correspondence with this client.
+  if (!lead.preferredChannels && channels.length > 0) {
+    await query("UPDATE leads SET preferred_channels = $1 WHERE id = $2", [
+      channels.join(","),
+      params.id,
+    ]);
+  }
+
   const origin = req.nextUrl.origin;
   const link = `${origin}/lead/${lead.id}`;
   const firstName = lead.name.split(" ")[0];
