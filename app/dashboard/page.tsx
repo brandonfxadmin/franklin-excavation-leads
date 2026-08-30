@@ -109,9 +109,31 @@ export default function DashboardPage() {
       setNewLeadId(data.id);
       setCopied(false);
       setSendResult(null);
-      setChannels({ email: false, text: false });
       setForm({ name: "", phone: "", email: "", address: "", adminNotes: "" });
       loadLeads();
+
+      const selected = Object.entries(channels)
+        .filter(([, v]) => v)
+        .map(([k]) => k);
+      if (selected.length > 0) {
+        setSending(true);
+        const sendRes = await fetch(`/api/leads/${data.id}/notify`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ channels: selected }),
+        });
+        const sendData = await sendRes.json();
+        setSending(false);
+        const parts: string[] = [];
+        if (sendData.results?.email) {
+          parts.push(sendData.results.email.ok ? "Emailed ✓" : `Email failed: ${sendData.results.email.error}`);
+        }
+        if (sendData.results?.text) {
+          parts.push(sendData.results.text.ok ? "Texted ✓" : `Text failed: ${sendData.results.text.error}`);
+        }
+        setSendResult(parts.join(" · "));
+      }
+      setChannels({ email: false, text: false });
     }
   }
 
@@ -257,9 +279,38 @@ export default function DashboardPage() {
                 value={form.adminNotes}
                 onChange={(e) => setForm({ ...form, adminNotes: e.target.value })}
               />
+
+              <div style={{ marginTop: 16 }}>
+                <label>Send it now <span style={{ fontWeight: 400, color: "#7a7361" }}>(optional)</span></label>
+                <div className="stack" style={{ alignItems: "center", gap: 16 }}>
+                  <label style={{ display: "flex", alignItems: "center", gap: 6, fontWeight: 400 }}>
+                    <input
+                      type="checkbox"
+                      checked={channels.email}
+                      onChange={(e) => setChannels({ ...channels, email: e.target.checked })}
+                    />
+                    Email
+                  </label>
+                  <label style={{ display: "flex", alignItems: "center", gap: 6, fontWeight: 400 }}>
+                    <input
+                      type="checkbox"
+                      checked={channels.text}
+                      onChange={(e) => setChannels({ ...channels, text: e.target.checked })}
+                    />
+                    Text
+                  </label>
+                </div>
+              </div>
+
               <div className="stack" style={{ marginTop: 16, alignItems: "center" }}>
-                <button className="btn" type="submit" disabled={creating}>
-                  {creating ? "Creating..." : "Create Lead & Get Link"}
+                <button className="btn" type="submit" disabled={creating || sending}>
+                  {creating
+                    ? "Creating..."
+                    : sending
+                    ? "Sending..."
+                    : channels.email || channels.text
+                    ? "Create Lead & Send"
+                    : "Create Lead & Get Link"}
                 </button>
                 <button
                   className="btn ghost"
